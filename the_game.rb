@@ -1,0 +1,6 @@
+board = "
+
+
+
+"
+puts board
