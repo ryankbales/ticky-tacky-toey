@@ -1,3 +1,4 @@
+require 'pry'
 #create board
 #introduce the game
 #assign x or o to respective player
@@ -9,18 +10,31 @@
 #if no winner ask for input again
 #if there is a winner or the board is full announce outcome
 
-def create_empty_board
+def grid
+  g = {}
+  (1..9).each {|pos| g[pos] = " "}
+  g
+end
+
+def make_grid(g)
+  system 'clear'
+  puts " #{g[1]} | #{g[2]} | #{g[3]} | "
+  puts "-------------"
+  puts " #{g[4]} | #{g[5]} | #{g[6]} | "
+  puts "-------------"
+  puts " #{g[7]} | #{g[8]} | #{g[9]} | "
+end
+
+def pick_your_marker
 
 end
 
-def assign_player_token
+def x_marks_spot(x)
+  puts "X, mark your spot(1-9)"
+  spot = gets.chomp.to_i
+  x[spot] = "X"
 end
 
-def get_input
-end
+spots = grid
 
-def check_for_winner
-end
-
-
-puts "Lets play Tic Tac Toe!"
+make_grid(spots)
