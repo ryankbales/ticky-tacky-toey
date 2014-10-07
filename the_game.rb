@@ -1,14 +1,5 @@
 require 'pry'
-#create board
-#introduce the game
-#assign x or o to respective player
-#ask player for input
-#assing input to board
-#get computer input
-#assign input to board
-#checks for winner
-#if no winner ask for input again
-#if there is a winner or the board is full announce outcome
+
 def grid
   g = {}
   i = 1
@@ -24,7 +15,7 @@ puts "Let's play tic tac toe!"
 spots = grid
 human = ""
 machine = ""
-outcome = ""
+outcome = "Choose Wisely"
 status = false
 puts "Do you want to be X or O"
 human = gets.chomp.upcase
@@ -34,13 +25,15 @@ else
   machine = 'X'
 end
 
-def make_grid(g)
+def make_grid(g, message)
   system 'clear'
   puts " #{g[1]} | #{g[2]} | #{g[3]} | "
   puts "-------------"
   puts " #{g[4]} | #{g[5]} | #{g[6]} | "
   puts "-------------"
   puts " #{g[7]} | #{g[8]} | #{g[9]} | "
+  puts "*************"
+  puts message
 end
 
 def there_is_a_win_or_draw?(current_set, player_1, player_2, outcome, result)
@@ -49,35 +42,40 @@ def there_is_a_win_or_draw?(current_set, player_1, player_2, outcome, result)
       if a.first == player_1
         outcome = "#{player_1.upcase} is the winner!"
         result = true
+        return outcome, result
       else
         outcome = "#{player_2.upcase} is the winner!"
         result = true
+        return outcome, result
       end
-    elsif  (a.uniq.length > 1) && (!a.include?(Integer)) #if they aren't the same it's a tie
-      outcome = "It's a draw!"
-      result = true
-    else
-      outcome = "Select again."
-      result = false
     end
   end
+  #if there isn't a winner than we need to keep going or it's a draw
+  #keep going?
+  current_set.each do |a|
+    if  (a.uniq.length > 1) && (a.all? {|spot| (spot.is_a? String) || (spot.is_a? Integer) })
+      return outcome, result
+    end
+  end
+  #then it must be a tie
+  current_set.each do |a|
+    if  (a.uniq.length > 1) && (a.all? {|spot| spot.is_a? String}) #if they aren't the same and all strings it's a tie
+      outcome = "It's a draw!"
+      result = true
+      return outcome, result
+    end
+  end
+
 end
 
 while status == false
-  make_grid(spots)
+  make_grid(spots, outcome)
   puts "#{human}, mark your spot!(1-9)" # get human input
   spot = gets.chomp.to_i
 
-  if (spots[spot] != "X") || (spots[spot] != "O")
-    spots[spot] = human #assign to board and replace number in winning_set
-    winning_sets.each do |i|
-      i.each do |mark|
-        if mark == spot
-          mark = human
-        end
-      end
-    end
-  end
+  #assign to board and replace number in winning_set
+  spots[spot] = human
+  winning_sets = winning_sets.map { |i| i.map { |mark| (mark == spot) ? human : mark} }
 
   #do this again for computer, except for the selection part
   available_spots = spots.select { |k, v|  v.is_a?(Integer)  }
@@ -87,17 +85,13 @@ while status == false
   end
 
   machine_choice = available_spots_value.shuffle.first
-  if (spots[machine_choice] != "X") || (spots[machine_choice] != "O")
-    spots[machine_choice] = machine #assign to board and replace number in winning_set
-    winning_sets.each do |i|
-      i.each do |mark|
-        if mark == machine_choice
-          mark = machine
-        end
-      end
-    end
-  end
 
-  there_is_a_win_or_draw?(winning_sets, human, machine, outcome, status)
-  puts outcome
+  #assign to board and replace number in winning_set
+  spots[machine_choice] = machine
+  winning_sets = winning_sets.map { |i| i.map { |mark| (mark == machine_choice) ? machine : mark} }
+
+  set_result = there_is_a_win_or_draw?(winning_sets, human, machine, outcome, status)
+  outcome = set_result[0]
+  status = set_result[1]
 end
+puts outcome #should only print win someone wins or there is a draw
